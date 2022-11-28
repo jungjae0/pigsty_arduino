@@ -5,6 +5,8 @@ int NHEAT = 9; //발열장치
 int NFOG = 10; //안개분무
 int NFAN =11; //환기팬
 
+int FFAN = 13;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -14,6 +16,8 @@ void setup() {
   pinMode(NHEAT, OUTPUT);
   pinMode(NFAN, OUTPUT);
   pinMode(NFOG, OUTPUT);
+
+  pinMode(FFAN, OUTPUT);
 }
 
 void flick_slow(int pin) {
@@ -103,15 +107,19 @@ void loop() {
       // delay(600);
       // flick_slow(CFAN);
       slow_pin[0] = CFAN;
+      digitalWrite(FFAN, HIGH);
     } else if (strRead.indexOf("CFAN-2") >= 0) {
       digitalWrite(CFAN, HIGH);
       // delay(300);
       // flick_fast(CFAN);
       fast_pin[0] = CFAN;
+      digitalWrite(FFAN, HIGH);
     } else if (strRead.indexOf("CFAN-3") >= 0) {
       digitalWrite(CFAN, HIGH);
+      digitalWrite(FFAN, HIGH);
     } else if (strRead.indexOf("CFAN-0") >= 0) {
       digitalWrite(CFAN, LOW);
+      digitalWrite(FFAN, LOW);
     }
     // } else if (strRead.indexOf("FAN-6") >= 0) {
     //   digitalWrite(CFAN, 0);
