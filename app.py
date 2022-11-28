@@ -1,19 +1,22 @@
-﻿import pandas as pd
+import atexit
+
+import pandas as pd
 import serial
 import time
+import atexit
 
 # https://kocoafab.cc/fboard/view/2159
 
-s = serial.Serial('COM4', 9600)
+s = serial.Serial('COM3', 9600)
 
 # csv 파일 정리
 def convert_data(filename, name):
 
-    df = pd.read_csv(filename)
+    df = pd.read_csv(filename, encoding='cp949')
     df.rename(columns=df.iloc[1], inplace=True)
     df.drop([0,1], inplace=True)
-    df.to_csv(f'./data/{name}.csv', encoding='utf-8')
-    df = pd.read_csv(f'./data/{name}.csv', encoding='utf-8')
+    df.to_csv(f'./data/{name}.csv', encoding='cp949')
+    df = pd.read_csv(f'./data/{name}.csv', encoding='cp949')
 
     return df
 
@@ -38,25 +41,6 @@ def cvent(df_control):
     else:
         return "CFAN-0"
 
-    # if vent_value == 90:
-    #     # send_signal_to_sfarm("FAN-1")
-    #     return "CFAN-9"
-    # elif vent_value == 80:
-    #     # send_signal_to_sfarm("FAN-1")
-    #     return "CFAN-8"
-    # elif vent_value == 70:
-    #     # send_signal_to_sfarm("FAN-1")
-    #     return "CFAN-7"
-    # elif vent_value == 60:
-    #     # send_signal_to_sfarm("FAN-1")
-    #     return "CFAN-6"
-    # elif vent_value == 50:
-    #     # send_signal_to_sfarm("FAN-1")
-    #     return "CFAN-5"
-    # else:
-    #     return "CFAN-0"
-    #     # send_signal_to_sfarm("FAN-0")
-
 # heat - 3, 2, 1, 0
 def cheat(df_control):
     heat_value = df_control["Heater"]
@@ -71,7 +55,6 @@ def cheat(df_control):
         return "CHEAT-1"
     else:
         return "CHEAT-0"
-
 
 # fog-1은 on, 2는 off
 def cfog(df_control):
@@ -138,9 +121,12 @@ def nfog(df_normal):
     else:
         return "NFOG-0"
 
+def handle_exit():
+    return send_signal_to_sfarm("CFAN-0CHEAT-0CFOG-0NFAN-0NHEAT-0NFOG-0")
+
 def main():
 
-    control_filenmae = "./data/시나리오 더미 데이터_환경장치.csv"
+    control_filenmae = "./data/시나리오 더미 데이터_환경제어.csv"
     normal_filename = "./data/시나리오 더미 데이터_미설치.csv"
 
     df_control_name = "control_scenario"
@@ -164,6 +150,8 @@ def main():
         print(f"send signal: {''.join(control_rule)}")
         print(f"send signal: {''.join(normal_rule)}")
         time.sleep(3)
+
+        atexit.register(handle_exit)
 
     # print(df_control["Heater"].unique())
     # print(df_normal["Heater"].unique())
