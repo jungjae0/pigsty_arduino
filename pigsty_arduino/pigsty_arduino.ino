@@ -1,3 +1,4 @@
+// led 및 환기팬이 아두이노의 몇 번에 연결되어 있는지 정의
 int CHEAT = 5; //발열장치
 int CFOG = 6; //안개분무
 int CFAN = 3; //환기팬
@@ -5,8 +6,10 @@ int NHEAT = 9; //발열장치
 int NFOG = 10; //안개분무
 int NFAN =11; //환기팬
 
-int FFAN = 13;
+int FFAN = 13; //진짜 환기팬
 
+// 사용할 함수들을 선언
+// 모두 코드를 통해 아두이노(환기팬,led)로 보낼 것이므로 OUTPUT
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -20,6 +23,7 @@ void setup() {
   pinMode(FFAN, OUTPUT);
 }
 
+// LED 깜빡임 제어 - 천천히 깜빡임
 void flick_slow(int pin) {
   // i++  == i = i + 1
   for (int i = 0; i < 3; i++) {
@@ -31,6 +35,7 @@ void flick_slow(int pin) {
   digitalWrite(pin, HIGH);
 }
 
+// LED 깜빡임 제어 - 빠르게 깜빡임
 void flick_fast(int pin) {
   // i++  == i = i + 1
   for (int i = 0; i < 3; i++) {
@@ -42,6 +47,7 @@ void flick_fast(int pin) {
   digitalWrite(pin, HIGH);
 }
 
+// 각 LED의 깜빡임이 동시에 진행될 수 있도록 함수 정의
 void flick_sensors(int* slow_pin, int* fast_pin) {
   int total_flick = 5;
   for (int i = 0; i < total_flick*2; i++) {
@@ -93,6 +99,7 @@ void flick_sensors(int* slow_pin, int* fast_pin) {
   }
 }
 
+// python에서 보낸 신호에 맞게 작동할 수 있는 함수 정의
 void loop() {
   if (Serial.available() > 0) {
     String strRead = Serial.readStringUntil("\n");
